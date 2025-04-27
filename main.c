@@ -1,3 +1,4 @@
+#include <SDL3/SDL_mouse.h>
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_log.h>
@@ -158,7 +159,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char** argv) {
   }
   *appstate = state;
 
-  if (!SDL_CreateWindowAndRenderer("demo", 640, 480, 0, &state->window, &state->rendererData.renderer)) {
+  if (!SDL_CreateWindowAndRenderer("Checkers", 400, 400, 0, &state->window, &state->rendererData.renderer)) {
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to create window and renderer: %s", SDL_GetError());
     return SDL_APP_FAILURE;
   }
@@ -235,7 +236,10 @@ SDL_AppResult SDL_AppIterate(void *appstate)
     AppState *state = appstate;
 
     Clay_RenderCommandArray render_commands = ClayVideoDemo_CreateLayout(&state->demoData);
-
+    
+    float mouseX, mouseY;
+    SDL_MouseButtonFlags flags = SDL_GetMouseState(&mouseX, &mouseY);
+    Clay_SetPointerState((Clay_Vector2) { .x = mouseX, .y = mouseY}, flags & SDL_BUTTON_LEFT);
     SDL_SetRenderDrawColor(state->rendererData.renderer, 0, 0, 0, 255);
     SDL_RenderClear(state->rendererData.renderer);
 
@@ -278,12 +282,3 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result)
     }
     TTF_Quit();
 }
-
-// int main() {
-//   state = STATE_PRE_GAME;
-//
-//   main_loop();
-//   // draw_board();    
-//
-//   return 0;
-// }
